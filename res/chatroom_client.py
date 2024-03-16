@@ -25,6 +25,8 @@ class SendMessageWindow(tk.Toplevel):
         self.message_entry = tk.Entry(self, width=50)
         self.message_entry.pack(side=tk.TOP, fill=tk.X, padx=10, pady=10)
 
+        self.bind_keys()
+
         # 发送按钮
         self.send_button = tk.Button(self, text="发送", command=lambda: self.send_message(self.message_entry.get()), width=8)
         self.send_button.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(0, 10), anchor=tk.CENTER)
@@ -32,6 +34,10 @@ class SendMessageWindow(tk.Toplevel):
         # 如果尚未连接，尝试连接到服务器
         if not connected:
             self.create_connection()
+
+    def bind_keys(self):
+        # 绑定键盘事件 <Return> 到 send_message 方法
+        self.message_entry.bind('<Return>', self.send_message)
 
     def create_connection(self):
         global client, connected
@@ -51,10 +57,15 @@ class SendMessageWindow(tk.Toplevel):
                 messagebox.showerror("错误！", "无法连接到服务器，请检查服务器IP地址。")
                 # 不再创建SendMessageWindow实例
 
-    def send_message(self, message):
+    def send_message(self, event=None):
+        # 获取输入框中的文本
+        message = self.message_entry.get()
+        # 检查是否有消息文本
         if message:
+            # 发送消息
             global client
             client.send((self.nickname + ": " + message).encode('utf-8'))
+            # 清空输入框
             self.message_entry.delete(0, tk.END)
 
     def receive_message(self):
