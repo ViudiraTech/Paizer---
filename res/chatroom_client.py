@@ -119,9 +119,9 @@ def main():
     root.geometry("300x150")  # 主窗口大小
     root.resizable(width=False, height=False)
 
-    nickname_label = tk.Label(root, text="键入您的昵称:")
+    nickname_label = tk.Label(root, text="键入您的昵称（支持中、英文）:")
     nickname_entry = tk.Entry(root)
-    server_ip_port_label = tk.Label(root, text="键入服务器的IP地址(可选端口):")
+    server_ip_port_label = tk.Label(root, text="键入服务器IP地址(可选端口，默认21156):")
     server_ip_port_entry = tk.Entry(root)
 
     nickname_label.pack()

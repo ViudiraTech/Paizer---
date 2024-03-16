@@ -4,32 +4,50 @@
 import socket
 import threading
 
-print('Paizer服务端\n')
-
 def get_local_ipv4():
-    # 获取所有网络接口的信息
     interfaces = socket.getaddrinfo(socket.gethostname(), None)
     for interface in interfaces:
         address = interface[4][0]
-        # 检查是否为IPv4地址
         if address.startswith('192.168') or address.startswith('10.') or address.startswith('172.'):
             return address
     return '无法获取IPv4内网地址'
 
+def get_server_port():
+    while True:
+        input_port = input("设置服务端监听端口（留空为21156）：")
+        if not input_port:
+            port = 21156
+        else:
+            try:
+                port = int(input_port)
+                if 0 < port < 65536:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as test_socket:
+                        try:
+                            test_socket.bind(('localhost', port))
+                        except PermissionError:
+                            print(f"端口 {port} 已被占用或不允许访问。请重新输入端口号。")
+                            continue
+                else:
+                    print("端口号无效，请输入1到65535之间的数字。")
+            except ValueError:
+                print("请输入一个有效的端口号。")
+        return port
+
+print('Paizer服务端\n')
+
+server_port = get_server_port()
+print()
+print(f"[*] 当前服务端监听端口: {server_port}")
+
 local_ipv4 = get_local_ipv4()
 print(f"[*] 当前服务器内网地址: {local_ipv4}")
 
-# 服务端的IP地址和端口号
-server_ip = '0.0.0.0'  # 监听所有公网IP
-server_port = 21156
-
-# 创建socket对象
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((server_ip, server_port))
+server.bind(('0.0.0.0', server_port))
 server.listen(5)
+server_ip, server_port = server.getsockname()
 print(f"[*] 正在监听 {server_ip}:{server_port}\n")
 
-# 存储所有客户端的列表
 clients = []
 
 def handle_client(client_socket, client_address, broadcast):
@@ -72,9 +90,7 @@ def broadcast(target, message):
 
 while True:
     client, address = server.accept()
-#   print(f"[*] [{address[0]}] 加入了服务器")
     clients.append(client)
 
-    # 创建一个新线程来处理客户端
     client_thread = threading.Thread(target=handle_client, args=(client, address, broadcast))
     client_thread.start()
