@@ -3,6 +3,7 @@
 
 import socket
 import threading
+from datetime import datetime
 
 def get_local_ipv4():
     interfaces = socket.getaddrinfo(socket.gethostname(), None)
@@ -53,30 +54,35 @@ clients = []
 def handle_client(client_socket, client_address, broadcast):
     # 接收客户端的昵称
     client_nickname = client_socket.recv(1024).decode('utf-8').strip(': ')
-    print(f"[*] [{address[0]}] {client_nickname} 加入了服务器")
-    broadcast(client_socket, f"[*] [{address[0]}] {client_nickname} 加入了服务器")
+    current_time = datetime.now().strftime("%H:%M:%S")
+    print(f"[*] [{current_time}] {client_nickname} 加入了服务器")
+    broadcast(client_socket, f"[*] [{current_time}] {client_nickname} 加入了服务器")
     
     while True:
         try:
             message = client_socket.recv(1024).decode('utf-8')
             if message:
-                print(f"[{client_address[0]}] {message}")
-                # 广播消息给所有连接的客户端，包括发送者
-                broadcast(None, f"[{client_address[0]}] {message}")
-            else:
-                # 客户端断开连接
-                clients.remove(client_socket)
-                client_socket.close()
-                print(f"[*] [{client_address[0]}] {client_nickname} 已断开连接")
-                broadcast(client_socket, f"[*] [{client_address[0]}] {client_nickname} 已断开连接")  # 广播断开连接消息
-                break
+                # 假设消息格式为 "用户名: 消息内容"
+                parts = message.split(":", 1)  # 分割用户名和消息内容
+                if len(parts) == 2:
+                    username, message_content = parts
+                    current_time = datetime.now().strftime("%H:%M:%S")
+                    # 格式化消息，包含时间戳和消息内容
+                    formatted_message = f"[{current_time}] {username}: {message_content}"
+                    print(formatted_message)
+                    # 广播消息给所有连接的客户端，包括发送者
+                    broadcast(None, formatted_message)
+                else:
+                    # 如果消息格式不正确，发送错误消息
+                    client.send("错误的格式，消息未发送。".encode('utf-8'))
         except Exception as e:
             print(f"[!] Exception: {e}")
             # 从clients列表中移除异常的客户端
             clients.remove(client_socket)
             client_socket.close()
-            print(f"[*] [{client_address[0]}] {client_nickname} 已断开连接")
-            broadcast(client_socket, f"[*] [{client_address[0]}] {client_nickname} 已断开连接")  # 广播断开连接消息
+            current_time = datetime.now().strftime("%H:%M:%S")
+            print(f"[*] [{current_time}] {client_nickname} 已断开连接")
+            broadcast(client_socket, f"[*] [{current_time}] {client_nickname} 已断开连接")  # 广播断开连接消息
             break
 
 def broadcast(target, message):
