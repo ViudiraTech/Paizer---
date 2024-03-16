@@ -1,5 +1,5 @@
 # By ViudiraTech
-# GPL-2.0
+# GPL-2.0 LICENSE
 
 import socket
 import threading
