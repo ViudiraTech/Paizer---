@@ -13,13 +13,13 @@ client = None
 connected = False
 
 class SendMessageWindow(tk.Toplevel):
-    def __init__(self, master, nickname, server_ip):
+    def __init__(self, master, nickname, server_ip_port):
         super().__init__(master)
         self.master = master
         self.nickname = nickname
         self.geometry("300x80")  # 增加窗口高度，确保所有组件都能显示
         self.resizable(width=False, height=False)
-        self.server_ip = server_ip
+        self.server_ip_port = server_ip_port
 
         # 输入框
         self.message_entry = tk.Entry(self, width=50)
@@ -43,19 +43,28 @@ class SendMessageWindow(tk.Toplevel):
         global client, connected
         if not connected:
             try:
+                # 检查是否输入了端口号
+                if ':' in self.server_ip_port:
+                    server_ip, port_str = self.server_ip_port.split(':')
+                    port = int(port_str)
+                else:
+                    server_ip = self.server_ip_port
+                    port = 21156  # 默认端口号
+
+                # 创建socket并连接到服务器
                 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client.connect((self.server_ip, 21156))
+                client.connect((server_ip, port))
                 client.send(f"{self.nickname}".encode('utf-8'))
                 connected = True
                 self.receive_thread = threading.Thread(target=self.receive_message)
                 self.receive_thread.start()
-                print("成功登录到服务器\n")
+                print(f"成功登录到服务器 {server_ip}:{port}\n")
             except Exception as e:
-                print(f"[!] 无法连接至服务器 {self.server_ip}: {e}")
-                client.close()
+                print(f"[!] 无法连接至服务器 {self.server_ip_port}: {e}")
+                if client is not None:
+                    client.close()
                 connected = False
-                messagebox.showerror("错误！", "无法连接到服务器，请检查服务器IP地址。")
-                # 不再创建SendMessageWindow实例
+                messagebox.showerror("错误！", "无法连接到服务器，请检查服务器IP地址和端口号。")
 
     def send_message(self, event=None):
         # 获取输入框中的文本
@@ -75,23 +84,33 @@ class SendMessageWindow(tk.Toplevel):
                 print(message)
             except Exception as e:
                 print(f"[!] 接收消息时发生错误: {e}")
-                client.close()
+                if client is not None:
+                    client.close()
                 connected = False
                 break
 
-def validate_input(nickname, server_ip):
+def validate_input(nickname, server_ip_port):
     if not nickname.strip():
         messagebox.showwarning("警告！", "昵称不能为空。")
         return False
-    if not server_ip.strip():
-        messagebox.showwarning("警告！", "服务器 IP 地址不能为空。")
+    try:
+        # 尝试分割IP和端口，如果没有端口号，使用默认值
+        server_ip, port_str = server_ip_port.rsplit(':', 1)
+        port = int(port_str) if port_str.isdigit() else 21156  # 如果端口号是数字，则使用，否则使用默认端口
+    except ValueError:
+        # 如果没有分割出端口号，设置默认端口
+        server_ip = server_ip_port
+        port = 21156
+    # 检查昵称和服务器IP地址是否有效
+    if not server_ip.strip() or not port:
+        messagebox.showwarning("警告！", "请输入有效的服务器IP地址和端口号。")
         return False
     return True
 
-def on_connect(root, nickname, server_ip):
-    if not validate_input(nickname, server_ip):
+def on_connect(root, nickname, server_ip_port):
+    if not validate_input(nickname, server_ip_port):
         return
-    send_window = SendMessageWindow(root, nickname, server_ip)
+    send_window = SendMessageWindow(root, nickname, server_ip_port)
     root.withdraw()
 
 def main():
@@ -102,15 +121,15 @@ def main():
 
     nickname_label = tk.Label(root, text="键入您的昵称:")
     nickname_entry = tk.Entry(root)
-    server_ip_label = tk.Label(root, text="键入服务器的IP地址:")
-    server_ip_entry = tk.Entry(root)
+    server_ip_port_label = tk.Label(root, text="键入服务器的IP地址(可选端口):")
+    server_ip_port_entry = tk.Entry(root)
 
     nickname_label.pack()
     nickname_entry.pack()
-    server_ip_label.pack()
-    server_ip_entry.pack()
+    server_ip_port_label.pack()
+    server_ip_port_entry.pack()
 
-    connect_button = tk.Button(root, text="登录到服务器", command=lambda: on_connect(root, nickname_entry.get(), server_ip_entry.get()))
+    connect_button = tk.Button(root, text="登录到服务器", command=lambda: on_connect(root, nickname_entry.get(), server_ip_port_entry.get()))
     connect_button.pack(pady=20)
 
     root.mainloop()
