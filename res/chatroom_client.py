@@ -6,6 +6,10 @@ import threading
 import tkinter as tk
 from tkinter import messagebox
 import ctypes
+import shelve
+import pickle
+import os
+import appdirs  # 需要安装这个库来获取应用程序数据目录
 
 # 全局变量用于存储socket客户端对象和连接状态
 client = None
@@ -35,9 +39,17 @@ class LoginGUI:
         self.login_button = tk.Button(self.master, text="登录服务器", command=self.login, width=15)
         self.login_button.pack(pady=10)
 
+        # 加载之前保存的输入数据
+        self.nickname, self.server_ip_port = load_input_data()
+        self.nickname_entry.insert(0, self.nickname)
+        self.server_ip_port_entry.insert(0, self.server_ip_port)
+
     def login(self):
         nickname = self.nickname_entry.get()
         server_ip_port = self.server_ip_port_entry.get()
+
+        # 保存输入数据
+        save_input_data(self.nickname_entry.get(), self.server_ip_port_entry.get())
 
         # 验证输入
         if validate_input(nickname, server_ip_port):
@@ -45,6 +57,7 @@ class LoginGUI:
             global login_window
             login_window = self.master  # 确保全局变量引用当前的登录窗口
             on_connect(nickname, server_ip_port, self.master)
+            
             # 隐藏登录窗口
             self.master.withdraw()
 
@@ -158,6 +171,40 @@ class PaizerClientGUI:
         self.message_text.insert(tk.END, message + '\n')
         self.message_text.config(state='disabled')  # 禁止编辑文本框
         self.message_text.yview(tk.END)  # 自动滚动到最新消息
+
+def save_input_data(nickname, server_ip_port):
+    # 获取应用程序数据目录
+    data_dir = appdirs.user_data_dir('Paizer', 'ViudiraTech')
+    # 创建配置文件的完整路径
+    config_file = os.path.join(data_dir, 'user_data.dat')
+    try:
+        with shelve.open(config_file, 'c') as db:  # 使用'c'模式创建新数据库
+            db['nickname'] = nickname
+            db['server_ip_port'] = server_ip_port
+    except Exception as e:
+        print(f"[!] 保存输入数据时发生错误: {e}")
+        
+def load_input_data():
+    # 获取应用程序数据目录
+    data_dir = appdirs.user_data_dir('Paizer', 'ViudiraTech')
+    # 创建配置文件的完整路径
+    config_file = os.path.join(data_dir, 'user_data.dat')
+    
+    # 确保数据目录存在
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+    
+    # 尝试加载或创建数据
+    try:
+        with shelve.open(config_file, 'c') as db:  # 使用'c'模式创建新数据库
+            nickname = db.get('nickname', '')  # 默认昵称
+            server_ip_port = db.get('server_ip_port', '')  # 默认服务器IP和端口
+            db['nickname'] = nickname  # 保存默认值
+            db['server_ip_port'] = server_ip_port  # 保存默认值
+            return nickname, server_ip_port
+    except Exception as e:
+        print(f"[!] 加载输入数据时发生错误: {e}")
+        return '', ''  # 如果发生错误，返回默认值
 
 def validate_input(nickname, server_ip_port, parent=None):
     if not nickname.strip():
