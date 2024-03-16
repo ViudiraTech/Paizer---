@@ -55,8 +55,8 @@ def handle_client(client_socket, client_address, broadcast):
     # 接收客户端的昵称
     client_nickname = client_socket.recv(1024).decode('utf-8').strip(': ')
     current_time = datetime.now().strftime("%H:%M:%S")
-    print(f"[*] [{current_time}] {client_nickname} 加入了服务器")
-    broadcast(client_socket, f"[*] [{current_time}] {client_nickname} 加入了服务器")
+    print(f"\n[*] [{current_time}] {client_nickname} 加入了服务器\n")
+    broadcast(client_socket, f"\n[*] [{current_time}] {client_nickname} 加入了服务器\n")
     
     while True:
         try:
@@ -81,8 +81,8 @@ def handle_client(client_socket, client_address, broadcast):
             clients.remove(client_socket)
             client_socket.close()
             current_time = datetime.now().strftime("%H:%M:%S")
-            print(f"[*] [{current_time}] {client_nickname} 已断开连接")
-            broadcast(client_socket, f"[*] [{current_time}] {client_nickname} 已断开连接")  # 广播断开连接消息
+            print(f"\n[*] [{current_time}] {client_nickname} 已断开连接\n")
+            broadcast(client_socket, f"\n[*] [{current_time}] {client_nickname} 已断开连接\n")  # 广播断开连接消息
             break
 
 def broadcast(target, message):
