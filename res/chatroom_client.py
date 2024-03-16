@@ -12,7 +12,7 @@ login_window = None
 class LoginGUI:
     def __init__(self, master):
         self.master = master  # 存储传入的 Tk 实例
-        self.master.title("Paizer客户端")
+        self.master.title("Paizer客户端-登录")
         self.master.geometry("280x150")  # 调整登录窗口大小
         # 设置窗口的最小和最大尺寸为当前大小，从而禁止调整窗口大小
         self.master.resizable(width=False, height=False)
@@ -29,7 +29,7 @@ class LoginGUI:
         self.server_ip_port_entry.pack()
 
         # 登录按钮
-        self.login_button = tk.Button(self.master, text="登录", command=self.login)
+        self.login_button = tk.Button(self.master, text="登录服务器", command=self.login, width=15)
         self.login_button.pack(pady=10)
 
     def login(self):
@@ -48,7 +48,7 @@ class LoginGUI:
 class PaizerClientGUI:
     def __init__(self, master, nickname, server_ip_port):
         self.master = master
-        self.master.title("Paizer客户端")
+        self.master.title("Paizer客户端-主页")
         self.master.geometry("570x470")  # 调整GUI窗口大小
         self.master.resizable(width=False, height=False)
 
@@ -121,7 +121,7 @@ class PaizerClientGUI:
                 self.receive_thread = threading.Thread(target=self.receive_message)
                 self.receive_thread.start()
                 self.log_message("Paizer客户端")
-                self.log_message(f"成功登录到服务器 {server_ip}:{port}\n")
+                self.log_message(f"成功登录至服务器 {server_ip}:{port}\n")
             except Exception as e:
                 self.log_message(f"[!] 无法连接至服务器 {self.server_ip_port}: {e}")
                 if client is not None:
