@@ -15,7 +15,7 @@ We invite you to participate in this project and create a better communication e
 * Persistent settings: User settings are automatically saved and can be quickly restored even if they are restarted.  
 * Multi-threaded processing: Efficiently process multi-user concurrent messages to ensure smooth communication.
 
-### 📥 安装指南
+### 📥 Installation Guide
 
 #### Preconditions
 
@@ -41,7 +41,7 @@ The server will start on the default port 21156 and wait for the client to conne
 #### Run the client
 
 In another terminal window, run the following command to start the client:  
-`<python chatroom_client.py>`  
+`python chatroom_client.py`  
 The client will open a login window where you can enter your nickname and server IP address to log in.
 
 ### 🔧 How to use
@@ -80,7 +80,7 @@ If you encounter any issues while using it, please file a new issue in Gitee's i
 
 Paizer is licensed under the GPL 2.0 license. You are free to use, modify, and distribute the code, as long as you comply with the terms of the license.
 
-### 💬 社区
+### 💬 community
 
 Join our community and connect with developers and users from all over the world:  
 * [ViudiraTech China - Official Website](https://ViudiraTech.中国/)

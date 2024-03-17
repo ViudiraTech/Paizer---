@@ -41,7 +41,7 @@
 #### 运行客户端
 
 在另一个终端窗口中，运行以下命令启动客户端：  
-`<python chatroom_client.py>`  
+`python chatroom_client.py`  
 客户端将打开一个登录窗口，您可以输入昵称和服务器IP地址进行登录。
 
 ### 🔧 如何使用
