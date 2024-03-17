@@ -73,7 +73,7 @@ class PaizerClientGUI:
         self.server_ip_port = server_ip_port
 
         # 创建消息显示区域
-        self.message_text = tk.Text(self.master, height=15, width=60, font=('Arial', 12))
+        self.message_text = tk.Text(self.master, height=15, width=60, font=('微软雅黑', 13))
         self.message_text.pack(expand=True, fill='both')
 
         # 创建滚动条
