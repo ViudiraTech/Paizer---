@@ -10,6 +10,7 @@ import shelve
 import pickle
 import os
 import appdirs  # 需要安装这个库来获取应用程序数据目录
+import time
 
 # 全局变量用于存储socket客户端对象和连接状态
 client = None
@@ -106,12 +107,18 @@ class PaizerClientGUI:
         # 询问用户是否确实想要退出
         choice = messagebox.askyesno("退出确认", "您确定要退出Paizer客户端吗？")
         if choice:  # 用户点击“是”
-            # 尝试安全地关闭socket连接
-            if client is not None:
-                client.close()
-            # 强制结束程序
-            ctypes.windll.kernel32.ExitProcess(0)
-        # 用户点击“否”，不做任何操作，窗口保持打开状态
+            try:
+                # 发送关闭请求到服务端
+                if client is not None and connected:
+                    client.send("CLOSE_REQUEST".encode('utf-8'))
+                time.sleep(0.5)  # 等待0.5秒，确保消息发送完成
+            except Exception as e:
+                print(f"[!] 发送关闭请求时发生错误: {e}")
+            finally:
+                # 尝试安全地关闭socket连接
+                if client is not None:
+                    client.close()
+                ctypes.windll.kernel32.ExitProcess(0)  # 强制结束程序
 
     # 新的方法，当按下回车键时调用
     def send_message_on_enter(self, event):
