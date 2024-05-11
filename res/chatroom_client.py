@@ -1,4 +1,4 @@
-# By ViudiraTech测试
+# By ViudiraTech
 # GPL-2.0 LICENSE ¯\_(ツ)_/¯
 
 # 导入必要的库
