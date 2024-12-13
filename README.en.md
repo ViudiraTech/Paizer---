@@ -3,12 +3,12 @@
 ### 🚀 introduce
 
 Welcome to the world of Paizer, a community-driven instant messenger designed to provide you with a safe, efficient, and easy-to-use communication platform.
-Whether you're a developer, student, or enterprise user, Paizer has you covered. Based on the GPL 2.0 license, we encourage the spirit of open source,
+Whether you're a developer, student, or enterprise user, Paizer has you covered. Based on the MIT license, we encourage the spirit of open source,
 We invite you to participate in this project and create a better communication experience together.
 
 ### 📋 peculiarity
 
-* Open source friendly: Completely open source, based on the GPL 2.0 license, free to use and modify.  
+* Open source friendly: Completely open source, based on the MIT license, free to use and modify.  
 * Cross-platform support: Windows, Linux, and macOS are supported, so you can chat on any device.  
 * Clean Interface: The intuitive user interface makes it easy to get started without a complex learning curve.  
 * Real-time messaging: Support real-time messaging so that your conversations don't lag anymore.  

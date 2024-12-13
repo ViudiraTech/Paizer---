@@ -1,5 +1,5 @@
 # By ViudiraTech
-# GPL-2.0 LICENSE ¯\_(ツ)_/¯
+# MIT LICENSE ¯\_(ツ)_/¯
 
 # 导入必要的库
 import socket  # 用于网络通信
